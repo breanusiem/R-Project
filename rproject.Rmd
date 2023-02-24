@@ -1,0 +1,60 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# packages
+library(tidyverse)
+library(modelr)
+library(faraway)
+library(alr4)
+```
+
+```{r echo=TRUE}
+library(alr4)
+ggplot(data = ftcollinstemp,
+  aes(x = fall, y = winter)) + geom_point(color = "purple", alpha = 0.8, size = 1.5) + theme_minimal()
+```
+
+```{r}
+fit <- lm(winter ~ fall, data = ftcollinstemp)
+plot(ftcollinstemp$fall, ftcollinstemp$winter, xlab = 'fall', ylab = 'winter')
+abline(fit, col='purple')
+
+plot(ftcollinstemp$fall, fit$residuals, xlab = 'fall', ylab = 'residuals')
+abline(a = 0, b = 0, col='purple')
+```
+
+```{r}
+x <- ftcollinstemp$fall
+y <- ftcollinstemp$winter
+n <- length(y)
+x_bar <- mean(x)
+y_bar <- mean(y)
+Sxx <- sum((x - x_bar)^2)
+Syy <- sum((y - y_bar)^2)
+Sxy <- sum((x - x_bar)*(y - y_bar))
+
+b0 <- summary(fit)$coef[1,1]
+b1 <- summary(fit)$coef[2,1]
+y_hat <- b0 + b1*x
+e <- y - y_hat
+r_2 <- 1 - (sum(e^2)/Syy)
+
+r <- cor(x,y)
+adj_r2 <- 1 - (sum(e^2)/(n-2))/(Syy/(n-1))
+
+summary(fit)$adj.r.squared
+```
+
+2.8% of the variation in the average winter temperature is explained by the average fall temperature
+
+```{r}
+```
+
+```{r appendix, include=FALSE, ref.label=knitr::all_labels()}
+```
